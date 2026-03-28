@@ -88,6 +88,10 @@ Note: MinGW builds won't auto-request admin. Run as Administrator manually.
 - **In-memory only** — patches do not modify any files on disk. Re-run the tool each time you start the game.
 - The tool must stay running (it uses the Windows debug API to intercept language resets in real-time).
 
+## Antivirus Warning
+
+The compiled exe may be flagged by antivirus software due to its use of debug APIs and process memory writes. There is no malicious behavior in the code — the full source is available for review. You can compile it yourself after reviewing, use the Python version instead, or choose not to use the tool at all.
+
 ## Disclaimer
 
 This tool is provided for educational and personal use. It modifies running process memory and does not alter any game files on disk. Use at your own risk.
@@ -100,7 +104,7 @@ The author is not responsible for any consequences resulting from the use of thi
 
 MIT License
 
-Copyright (c) 2025
+Copyright (c) 2026
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
