@@ -763,6 +763,19 @@ int main() {
                                    desired, LANG_NAMES[desired]);
                         }
                         else if (val == 0 && desired > 0) {
+                            // Only override if RIP is near LanguageIsPermitted
+                            // (inside the setter region). Ignore writes from
+                            // unrelated code to avoid gameplay interference.
+                            uint32_t rip_rva = (uint32_t)(ctx.Rip - base);
+                            int64_t dist = (int64_t)rip_rva - (int64_t)func_rva;
+                            if (dist < -0x2000 || dist > 0x2000) {
+                                ctx.Dr6 = 0;
+                                SetThreadContext(ht, &ctx);
+                                CloseHandle(ht);
+                                ContinueDebugEvent(ev.dwProcessId, ev.dwThreadId, DBG_CONTINUE);
+                                continue;
+                            }
+
                             // SERVER RESET DETECTED
                             // The function is paused AFTER writing 0 to the lang var.
                             // Override registers that carry the langId.

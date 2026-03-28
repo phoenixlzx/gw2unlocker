@@ -751,6 +751,22 @@ def main():
                                 print(f"  Language changed to: {desired} ({name})")
 
                             elif val == 0 and desired > 0:
+                                # Only override if the write came from the
+                                # language setter region (near LanguageIsPermitted).
+                                # This avoids interfering with unrelated code
+                                # that might write to this address.
+                                rip = struct.unpack_from("<Q", ctx, RIP_OFF)[0]
+                                rip_rva = rip - base
+                                if abs(int(rip_rva) - int(func_rva)) > 0x2000:
+                                    # Write from outside setter -- ignore
+                                    struct.pack_into("<Q", ctx, DR6_OFF, 0)
+                                    k32.SetThreadContext(ht, C.byref(ctx))
+                                    k32.CloseHandle(ht)
+                                    k32.ContinueDebugEvent(
+                                        ev.pid, ev.tid, DBG_CONTINUE
+                                    )
+                                    continue
+
                                 # Server reset -- override registers to
                                 # preserve the language.
                                 #
